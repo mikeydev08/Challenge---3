@@ -195,7 +195,7 @@
 }
 
 .message.user {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
