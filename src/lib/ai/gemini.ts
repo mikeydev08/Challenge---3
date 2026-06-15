@@ -1,15 +1,17 @@
 import { GoogleGenAI } from '@google/genai';
 
-// Initialize the Gemini client. We support either standard API Key or Vertex AI.
-const ai = new GoogleGenAI(
-  process.env.GEMINI_API_KEY 
-    ? { apiKey: process.env.GEMINI_API_KEY } 
-    : {
-        vertexai: true,
-        project: process.env.GOOGLE_CLOUD_PROJECT_ID as string,
-        location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
-      }
-);
+// Lazily initialize the Gemini client so it doesn't crash during Vercel's static build phase
+const getAIClient = () => {
+  return new GoogleGenAI(
+    process.env.GEMINI_API_KEY 
+      ? { apiKey: process.env.GEMINI_API_KEY } 
+      : {
+          vertexai: true,
+          project: process.env.GOOGLE_CLOUD_PROJECT_ID || 'dummy-project',
+          location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
+        }
+  );
+};
 
 /**
  * Conducts the AI Carbon Audit using Gemini 2.5 Pro for deep reasoning.
@@ -18,6 +20,7 @@ const ai = new GoogleGenAI(
  */
 export async function performCarbonAudit(userHabits: string) {
   try {
+    const ai = getAIClient();
     const prompt = `
     You are CarbonWise AI, an expert sustainability coach.
     Analyze the following user lifestyle habits and provide:
@@ -52,6 +55,7 @@ export async function performCarbonAudit(userHabits: string) {
  */
 export async function chatWithCoach(userMessage: string) {
   try {
+    const ai = getAIClient();
     const prompt = `
     You are CarbonWise AI, an expert, friendly sustainability coach.
     Respond to the user's message concisely in 1-2 sentences. 
