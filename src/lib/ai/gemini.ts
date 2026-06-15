@@ -23,13 +23,19 @@ export async function performCarbonAudit(userHabits: string) {
     const ai = getAIClient();
     const prompt = `
     You are CarbonWise AI, an expert sustainability coach.
-    Analyze the following user lifestyle habits and provide:
-    1. Estimated carbon footprint (in kg CO2e) categorized by transport, energy, food, etc.
-    2. 3 highly personalized, actionable recommendations to reduce emissions.
+    Analyze the following user lifestyle habits and calculate their carbon footprint.
     
     User Habits: "${userHabits}"
     
-    Respond strictly in JSON format.
+    Respond strictly in the following JSON format ONLY:
+    {
+      "emissions": "A short summary string of their estimated total carbon footprint (in kg CO2e) and categories",
+      "recommendations": [
+        "String recommendation 1",
+        "String recommendation 2",
+        "String recommendation 3"
+      ]
+    }
   `;
 
   const response = await ai.models.generateContent({
