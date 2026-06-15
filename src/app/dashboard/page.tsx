@@ -160,6 +160,7 @@ export default function Dashboard() {
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Ask about reducing operational emissions..." 
                 className={styles.input}
+                aria-label="Chat input for AI Coach"
               />
               <button type="submit" className={styles.sendBtn}>Send</button>
             </form>
