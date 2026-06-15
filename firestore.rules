@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      // Users can only read and write their own data
+      allow read, write: if isOwner(userId);
+      
+      // Carbon Audits Subcollection
+      match /audits/{auditId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Receipts Subcollection
+      match /receipts/{receiptId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Goals Subcollection
+      match /goals/{goalId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Global Challenges (Read-only for all authenticated users)
+    match /challenges/{challengeId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only written by Cloud Functions
+    }
+  }
+}
