@@ -5,10 +5,9 @@ const ai = new GoogleGenAI(
   process.env.GEMINI_API_KEY 
     ? { apiKey: process.env.GEMINI_API_KEY } 
     : {
-        vertexai: {
-          project: process.env.GOOGLE_CLOUD_PROJECT_ID as string,
-          location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
-        }
+        vertexai: true,
+        project: process.env.GOOGLE_CLOUD_PROJECT_ID as string,
+        location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
       }
 );
 
