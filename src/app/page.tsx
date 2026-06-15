@@ -64,7 +64,7 @@ export default function Home() {
             <div className={styles.stepNumber}>02</div>
             <div className={styles.stepContent}>
               <h4>LLM Processing</h4>
-              <p>Google's advanced multimodal architecture processes your data instantly through secure inference nodes.</p>
+              <p>Google&apos;s advanced multimodal architecture processes your data instantly through secure inference nodes.</p>
             </div>
           </div>
           <div className={styles.timelineStep}>
