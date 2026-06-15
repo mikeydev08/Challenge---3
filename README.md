@@ -6,7 +6,7 @@
 Empowering users with intelligent insights to demystify complex emission data and provide actionable, context-aware strategies for footprint reduction.
 
 ## 🚀 Live Demo
-**URL:** [https://challenge-3-f67vznya7-jay-panchal-s-projects2.vercel.app](https://challenge-3-f67vznya7-jay-panchal-s-projects2.vercel.app)
+**URL:** [https://challenge-3-lime.vercel.app/](https://challenge-3-lime.vercel.app/)
 
 ---
 
