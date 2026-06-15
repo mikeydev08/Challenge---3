@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styles from './audit.module.css';
+import { useAuditStore } from '../../lib/store';
 
 export default function AuditPage() {
   const [habits, setHabits] = useState('');
@@ -10,6 +11,8 @@ export default function AuditPage() {
     emissions: string;
     recommendations: string[];
   } | null>(null);
+
+  const setGlobalAuditData = useAuditStore((state) => state.setAuditData);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +42,8 @@ export default function AuditPage() {
          });
       } else {
          setResult(data);
+         // Persist to dashboard
+         setGlobalAuditData(data.emissions, data.recommendations);
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';

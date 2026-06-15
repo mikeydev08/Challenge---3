@@ -1,10 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './dashboard.module.css';
 import { Card } from '../../components/ui/Card';
+import { useAuditStore } from '../../lib/store';
 
 export default function Dashboard() {
+  // Get data from global state
+  const { emissions, recommendations } = useAuditStore();
+  const [isClient, setIsClient] = useState(false);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([
     { role: 'ai', text: "Hi! I'm your CarbonWise Coach. I noticed your transport emissions spiked this week. Would you like some tips on greener commute options?" }
@@ -46,6 +56,8 @@ export default function Dashboard() {
     }
   };
 
+  if (!isClient) return null; // Prevent hydration error on initial render
+
   return (
     <div className={styles.dashboard}>
       <header className={styles.header}>
@@ -56,8 +68,11 @@ export default function Dashboard() {
         {/* KPI Row */}
         <div className={styles.statsRow}>
           <Card title="Total Emissions (This Month)">
-            <p className={styles.statValue}>452 <span style={{fontSize: '1rem', color: 'var(--text-secondary)'}}>kg CO2e</span></p>
-            <p className={styles.statTrend}>↓ 12% from last month</p>
+            {emissions ? (
+              <p className={styles.statValue} style={{fontSize: '1.5rem'}}>{emissions}</p>
+            ) : (
+              <p className={styles.statValue} style={{fontSize: '1rem'}}>No Data. Run Audit First.</p>
+            )}
           </Card>
           <Card title="Current Streak">
             <p className={styles.statValue}>14 <span style={{fontSize: '1rem', color: 'var(--text-secondary)'}}>Days</span></p>
@@ -71,20 +86,20 @@ export default function Dashboard() {
 
         {/* AI Action Plan / Upcoming Goals */}
         <Card className={styles.actionPlan} title="AI Action Plan">
-          <ul className={styles.goalList}>
-            <li>
-              <input type="checkbox" id="goal1" />
-              <label htmlFor="goal1">Meatless Monday (Save 4kg CO2e)</label>
-            </li>
-            <li>
-              <input type="checkbox" id="goal2" />
-              <label htmlFor="goal2">Use public transit today (Save 12kg CO2e)</label>
-            </li>
-            <li>
-              <input type="checkbox" id="goal3" />
-              <label htmlFor="goal3">Turn off AC during peak hours</label>
-            </li>
-          </ul>
+          {recommendations.length > 0 ? (
+            <ul className={styles.goalList}>
+              {recommendations.map((rec, idx) => (
+                <li key={idx}>
+                  <input type="checkbox" id={`goal${idx}`} />
+                  <label htmlFor={`goal${idx}`}>{rec}</label>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div style={{ color: 'var(--text-secondary)', padding: '1rem' }}>
+              No recommendations available yet. Head over to the AI Audit to generate your personalized plan.
+            </div>
+          )}
         </Card>
 
         {/* Recent Activities Feed */}
