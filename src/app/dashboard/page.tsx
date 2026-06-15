@@ -50,7 +50,7 @@ export default function Dashboard() {
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       console.error(errorMessage);
-      setMessages([...newMessages, { role: 'ai', text: "Error: Could not reach Gemini API. Did you add GEMINI_API_KEY to .env.local?" }]);
+      setMessages([...newMessages, { role: 'ai', text: `Error: ${errorMessage}. (If this is a 503 error, Google's servers are busy!)` }]);
     } finally {
       setIsLoading(false);
     }
