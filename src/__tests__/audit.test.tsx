@@ -1,9 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AuditPage from '../app/audit/page';
 import '@testing-library/jest-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock the global fetch API
-global.fetch = jest.fn(() =>
+global.fetch = vi.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({
@@ -11,11 +12,11 @@ global.fetch = jest.fn(() =>
       recommendations: ["Test recommendation"]
     })
   })
-) as jest.Mock;
+) as import('vitest').Mock;
 
 describe('AI Carbon Audit Component', () => {
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockClear();
+    (global.fetch as import('vitest').Mock).mockClear();
   });
 
   it('renders the audit form properly', () => {

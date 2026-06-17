@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import styles from './audit.module.css';
 import { useAuditStore } from '../../lib/store';
+import { API } from '../../lib/apiClient';
 
 export default function AuditPage() {
   const [habits, setHabits] = useState('');
@@ -22,17 +23,7 @@ export default function AuditPage() {
     setResult(null);
 
     try {
-      const res = await fetch('/api/audit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ habits })
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to generate audit');
-      }
+      const data = await API.generateAudit(habits);
       
       // If the API isn't set up yet, fallback to a smart mock response
       if (!data.recommendations) {

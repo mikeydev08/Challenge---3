@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './dashboard.module.css';
 import { Card } from '../../components/ui/Card';
 import { useAuditStore } from '../../lib/store';
+import { API } from '../../lib/apiClient';
 
 export default function Dashboard() {
   // Get data from global state
@@ -22,39 +23,27 @@ export default function Dashboard() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim() || isLoading) return;
 
     const userText = chatInput;
     // Add user message
-    const newMessages = [...messages, { role: 'user', text: userText }];
-    setMessages(newMessages);
+    setMessages(prev => [...prev, { role: 'user', text: userText }]);
     setChatInput('');
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText })
-      });
-      
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to fetch response');
-      }
-
-      setMessages([...newMessages, { role: 'ai', text: data.reply }]);
+      const data = await API.chatWithCoach(userText);
+      setMessages(prev => [...prev, { role: 'ai', text: data.reply || 'No response' }]);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       console.error(errorMessage);
-      setMessages([...newMessages, { role: 'ai', text: `Error: ${errorMessage}. (If this is a 503 error, Google's servers are busy!)` }]);
+      setMessages(prev => [...prev, { role: 'ai', text: `Error: ${errorMessage}. (If this is a 503 error, Google's servers are busy!)` }]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [chatInput, isLoading]);
 
   if (!isClient) return null; // Prevent hydration error on initial render
 
