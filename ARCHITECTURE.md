@@ -2,36 +2,33 @@
 
 ## System Architecture
 
-CarbonWise AI utilizes a modern, serverless architecture centered around the Google Cloud ecosystem.
+CarbonWise AI utilises a modern, serverless architecture centred around the Google Cloud ecosystem.
 
 ```mermaid
 graph TD
-    Client[Next.js Client-Side App] -->|HTTPS / API Routes| NextServer[Next.js Server / Vercel or Cloud Run]
-    Client -->|Client SDK| FirebaseAuth[Firebase Authentication]
-    Client -->|Client SDK| Firestore[Firestore Database]
-    Client -->|Client SDK| CloudStorage[Cloud Storage]
-    
-    NextServer -->|Vertex AI SDK| GeminiPro[Gemini 2.5 Pro]
-    NextServer -->|Vertex AI SDK| GeminiFlash[Gemini 2.5 Flash]
-    NextServer -->|Vertex AI SDK| GeminiVision[Gemini Vision]
-    
-    NextServer -->|Server SDK| FirestoreDB[Firestore (Admin)]
-    
-    style GeminiPro fill:#4285f4,stroke:#fff,stroke-width:2px,color:#fff
+    Client["Next.js Client App"] -->|HTTPS / API Routes| NextServer["Next.js Server (Vercel Edge)"]
+    NextServer -->|"@google/genai SDK"| GeminiFlash["Gemini 2.5 Flash (Audit)"]
+    NextServer -->|"@google/genai SDK"| GeminiCoach["Gemini 2.5 Flash (Coach)"]
+    Client -->|Zustand| GlobalStore["Client State (Zustand)"]
+
     style GeminiFlash fill:#4285f4,stroke:#fff,stroke-width:2px,color:#fff
-    style GeminiVision fill:#4285f4,stroke:#fff,stroke-width:2px,color:#fff
-    style Firestore fill:#f4b400,stroke:#fff,stroke-width:2px,color:#fff
-    style FirebaseAuth fill:#f4b400,stroke:#fff,stroke-width:2px,color:#fff
+    style GeminiCoach fill:#4285f4,stroke:#fff,stroke-width:2px,color:#fff
+    style NextServer fill:#0070f3,stroke:#fff,stroke-width:2px,color:#fff
 ```
 
 ## Core Components
-1. **Frontend:** Next.js (App Router), TypeScript, Material Design 3.
-2. **Backend/Serverless:** Next.js API Routes / Firebase Cloud Functions.
-3. **AI Layer:** Vertex AI orchestrating Gemini models (Pro for deep reasoning, Flash for chat, Vision for receipt parsing).
-4. **Data Layer:** Firestore for real-time document storage, Cloud Storage for user uploads.
+1. **Frontend:** Next.js 14 (App Router), TypeScript, CSS Modules with design tokens.
+2. **Backend/Serverless:** Next.js API Routes deployed on Vercel Edge Functions.
+3. **AI Layer:** Google GenAI SDK orchestrating Gemini 2.5 Flash for both deep audit reasoning and conversational coaching.
+4. **State Management:** Zustand for cross-route persistence of AI audit results.
 
 ## Clean Architecture Flow
-- `src/app`: Next.js page routing and layouts.
-- `src/components`: Reusable UI components.
-- `src/lib`: Services, utility functions, and Firebase/AI configurations.
-- `src/hooks`: Custom React hooks for state management and data fetching.
+- `src/app/` — Next.js page routing, layouts, and API routes.
+- `src/components/` — Reusable, typed UI components (Card, Navbar).
+- `src/lib/` — Services (`apiClient.ts`), AI engine (`gemini.ts`), and state (`store.ts`).
+- `src/__tests__/` — Vitest unit and integration tests.
+
+## Key Decisions
+- **Lazy AI initialisation** prevents Vercel static-build crashes.
+- **Client-side validation** in `apiClient.ts` mirrors server-side limits for immediate feedback.
+- **`useCallback` hooks** prevent unnecessary re-renders in interactive components.
