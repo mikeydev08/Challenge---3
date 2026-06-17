@@ -129,11 +129,11 @@ export default function AuditPage() {
               
               <h3 style={{ marginTop: '1.5rem', color: 'var(--text-main)' }}>Optimization Strategies:</h3>
               <ul className={styles.recommendationList}>
-                {result.recommendations.map((rec: any, idx: number) => (
+                {result.recommendations.map((rec, idx) => (
                   <li key={idx}>
                     {typeof rec === 'string' 
                       ? rec 
-                      : (rec.action || rec.details || JSON.stringify(rec))}
+                      : (rec as Record<string, unknown>).action || (rec as Record<string, unknown>).details || JSON.stringify(rec)}
                   </li>
                 ))}
               </ul>
